@@ -9,7 +9,7 @@ Upcoming:
 
 $ looper finish #01
 
-$ less ~/.config/looper/looper.toml
+$ less ~/.config/looper/schedule.toml
 [[routines]]
 name = "vacuum"
 period = "* * * * 0"
