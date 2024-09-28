@@ -1,3 +1,4 @@
+use colored::Colorize;
 use cron::Schedule;
 use std::{collections::HashMap, str::FromStr};
 use heavy::{parse_cli, read_config, State, Commands};
@@ -9,16 +10,17 @@ fn main() {
 
     match cli.command {
         Commands::Show => {
-            println!("Upcoming:");
+            println!("{}", "Upcoming:".bright_white());
             for routine in schedule.routines {
                 let Some(period) = routine.period else { continue };
                 let cron_schedule = Schedule::from_str(&period).unwrap();
                 // TODO coloring
                 println!(
-                    "#{}  {}  @{}",
-                    routine.id,
+                    "{}  {}  {}",
+                    format!("#{}", routine.id).bright_black(),
                     routine.name,
-                    cron_schedule.upcoming(chrono::Local).next().unwrap(),
+                    format!("@{}", cron_schedule.upcoming(chrono::Local).next().unwrap())
+                        .bright_black(),
                 );
             }
         },
