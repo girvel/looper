@@ -7,7 +7,7 @@ use std::{env, fs};
 #[command(version, about, long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    pub command: Commands,
 }
 
 #[derive(Subcommand)]
@@ -22,15 +22,15 @@ pub fn parse_cli() -> Cli {
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Schedule {
-    routines: Vec<Routine>,
+    pub routines: Vec<Routine>,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub struct Routine {
-    id: String,
-    name: String,
-    period: String,
+    pub id: String,
+    pub name: String,
+    pub period: String,
 }
 
 pub fn read_config() -> Schedule {

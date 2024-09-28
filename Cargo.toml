@@ -1,3 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "heavy","logic"]
+members = ["heavy", "logic"]
+
+[profile.dev]
+opt-level = 1
