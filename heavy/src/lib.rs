@@ -28,18 +28,12 @@ pub fn parse_cli() -> Cli {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Schedule {
-    pub routines: Vec<Routine>,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct Routine {
-    pub id: String,
     pub name: String,
     pub period: Option<String>,
 }
 
-pub fn read_schedule() -> Schedule {
+pub fn read_schedule() -> HashMap<String, Routine> {
     let path = format!("{}/.config/looper/schedule.toml", env::var("HOME").unwrap());
     toml::from_str(
         fs::read_to_string(&path)

@@ -1,18 +1,18 @@
 use chrono::{DateTime, Local};
 use colored::Colorize;
-use std::{cmp::Reverse, str::FromStr};
-use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, State};
+use std::{cmp::Reverse, collections::HashMap, str::FromStr};
+use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine, State};
 
 /* TODO:
  *
  * - Install as executable
  * - Publish
  * - Redo schedule as a hashmap
- * - Display some results on finish
+ * - Display message on done
  */
 
 struct App {
-    schedule: heavy::Schedule,
+    schedule: HashMap<String, Routine>,
     state: State,
 }
 
@@ -25,20 +25,20 @@ impl App {
     }
 
     fn show(&self) {
-        let mut schedule_table: Vec<_> = self.schedule.routines.iter()
-            .filter_map(|r| {
-                let period = r.period.as_deref()?;
+        let mut schedule_table: Vec<_> = self.schedule.iter()
+            .filter_map(|(id, routine)| {
+                let period = routine.period.as_deref()?;
                 let time = cron::Schedule::from_str(&period)
                     .unwrap()
                     .after(
                         self.state.finish_times
-                            .get(&r.id)
+                            .get(id)
                             .unwrap_or(&DateTime::<Local>::default())
                     )
                     .next()
                     .unwrap();
 
-                Some((&r.id, &r.name, time))
+                Some((id, &routine.name, time))
             })
             .collect();
 
@@ -70,9 +70,7 @@ impl App {
     }
 
     fn done(&mut self, routine_id: &str) {
-        let period = &self.schedule.routines.iter()
-            .filter(|r| r.id == routine_id)
-            .next()
+        let period = &self.schedule.get(routine_id)
             .unwrap_or_else(|| panic!("Unable to find a task with id {}", routine_id))
             .period.as_ref()
             .unwrap_or_else(|| panic!("No period specified for task with id {}", routine_id));
