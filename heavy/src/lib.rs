@@ -39,13 +39,13 @@ pub struct Routine {
     pub period: Option<String>,
 }
 
-pub fn read_config() -> Schedule {
-    let config_path = format!("{}/.config/looper/schedule.toml", env::var("HOME").unwrap());
+pub fn read_schedule() -> Schedule {
+    let path = format!("{}/.config/looper/schedule.toml", env::var("HOME").unwrap());
     toml::from_str(
-        fs::read_to_string(&config_path)
-            .unwrap_or_else(|_| panic!("No configuration file at {}", &config_path))
+        fs::read_to_string(&path)
+            .unwrap_or_else(|_| panic!("No configuration file at {}", &path))
             .as_str()
-    ).expect("Wrong configuration file format")
+    ).expect("Wrong schedule file format")
 }
 
 #[derive(Serialize, Deserialize)]
@@ -53,16 +53,14 @@ pub struct State {
     pub finish_times: HashMap<String, DateTime<Local>>,
 }
 
-// pub fn read_state() -> State {
-//     let config_path = format!("{}/.config/looper/schedule.toml", env::var("HOME").unwrap());
-//     toml::from_str(
-//         fs::read_to_string(&config_path)
-//             .unwrap_or_else(|_| panic!("No configuration file at {}", &config_path))
-//             .as_str()
-//     ).expect("Wrong configuration file format")
-// }
+pub fn read_state() -> State {
+    let path = format!("{}/.config/looper/state.toml", env::var("HOME").unwrap());
+    let Ok(content) = fs::read_to_string(&path)
+        else { return State { finish_times: HashMap::new(), }};
+    toml::from_str(content.as_str()).expect("Wrong state file format")
+}
 
 pub fn write_state(state: &State) {
-    let config_path = format!("{}/.config/looper/state.toml", env::var("HOME").unwrap());
-    fs::write(&config_path, toml::to_string_pretty(state).unwrap()).unwrap();
+    let path = format!("{}/.config/looper/state.toml", env::var("HOME").unwrap());
+    fs::write(&path, toml::to_string_pretty(state).unwrap()).unwrap();
 }
