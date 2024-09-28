@@ -18,18 +18,31 @@ impl App {
 
     fn show(&self) {
         println!("{}", "Upcoming:".bright_white());
-        for routine in &self.schedule.routines {
-            let Some(ref period) = routine.period else { continue };
-            let time = cron::Schedule::from_str(&period)
-                .unwrap()
-                .after(self.state.finish_times.get(&routine.id).unwrap_or(&Local::now()))
-                .next()
-                .unwrap();
 
+        let mut schedule_table: Vec<_> = self.schedule.routines.iter()
+            .filter_map(|r| {
+                let period = r.period.as_deref()?;
+                let time = cron::Schedule::from_str(&period)
+                    .unwrap()
+                    .after(
+                        self.state.finish_times
+                            .get(&r.id)
+                            .unwrap_or(&DateTime::<Local>::default())
+                    )
+                    .next()
+                    .unwrap();
+
+                Some((&r.id, &r.name, time))
+            })
+            .collect();
+
+        schedule_table.sort_by_key(|&(_, _, time)| time);
+
+        for (id, name, time) in &schedule_table {
             println!(
                 "{}  {}  {}",
-                format!("#{}", routine.id).bright_black(),
-                routine.name,
+                format!("#{}", id).bright_black(),
+                name,
                 format!("@{}", time).bright_black(),
             );
         }
