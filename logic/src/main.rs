@@ -5,14 +5,14 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
 
 /* TODO:
  *
- * - Install as executable
+ * x Install as executable
  * - Publish
  * x Redo schedule as a hashmap
  * x Display message on done
  * - README
  * - Help message
  * - 1.0!
- * - dotfile
+ * - dotfiles
  */
 
 struct App {
@@ -40,7 +40,8 @@ impl App {
                     .unwrap_or(&DateTime::<Local>::default())
             )
             .next()
-            .unwrap())
+            .unwrap()
+        )
     }
 
     fn show(&self) {
