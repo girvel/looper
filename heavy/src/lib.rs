@@ -17,7 +17,7 @@ pub enum Commands {
     Show,
 
     /// mark routine as finished (works with future routines too)
-    Finish {
+    Done {
         /// value of routine's "id" field
         id: String,
     },
