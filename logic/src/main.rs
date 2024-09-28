@@ -1,7 +1,7 @@
 use chrono::{DateTime, Local};
 use colored::Colorize;
-use std::{collections::HashMap, str::FromStr};
-use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, State, Cli};
+use std::str::FromStr;
+use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, State};
 
 struct App {
     schedule: heavy::Schedule,
@@ -43,7 +43,7 @@ impl App {
                 "{}  {}  {}",
                 format!("#{}", id).bright_black(),
                 name,
-                format!("@{}", time).bright_black(),
+                format!("@{}", time.format("%d-%b-%Y")).bright_black(),
             );
         }
     }
