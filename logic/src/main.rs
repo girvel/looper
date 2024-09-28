@@ -58,11 +58,15 @@ impl App {
 
         self.state.finish_times.insert(
             routine_id.to_string(),
-            cron::Schedule::from_str(period)
-                .unwrap()
-                .after(self.state.finish_times.get(routine_id).unwrap_or(&Local::now()))
-                .next()
-                .unwrap(),
+            if let Some(finish_time) = self.state.finish_times.get(routine_id) {
+                cron::Schedule::from_str(period)
+                    .unwrap()
+                    .after(finish_time)
+                    .next()
+                    .unwrap()
+            } else {
+                Local::now()
+            }
         );
         write_state(&self.state);
     }
