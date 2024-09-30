@@ -1,5 +1,5 @@
 use chrono::{DateTime, Local};
-use colored::Colorize;
+use colored::{ColoredString, Colorize};
 use std::{cmp::Reverse, collections::HashMap, str::FromStr};
 use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine, State};
 
@@ -9,6 +9,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
  * - Publish
  * x Redo schedule as a hashmap
  * x Display message on done
+ * - handle unwraps
  * - README
  * - Help message
  * - 1.0!
@@ -21,6 +22,14 @@ struct App {
 }
 
 const DATE_FORMAT: &str = "%d-%b-%Y";
+
+fn header(text: &str) -> ColoredString {
+    text.bright_white().bold()
+}
+
+fn date(date: &DateTime<Local>) -> ColoredString {
+    format!("@{}", date.format(DATE_FORMAT)).bright_black()
+}
 
 impl App {
     fn new() -> Self {
@@ -54,7 +63,11 @@ impl App {
 
         schedule_table.sort_by_key(|&(_, _, time)| Reverse(time));
 
-        println!("\n{}", format!("Today is {}:", Local::now().format(DATE_FORMAT)).bright_white());
+        println!(
+            "\n{}",
+            header(&format!("Today is {}:", Local::now().format(DATE_FORMAT))),
+        );
+
         loop {
             if schedule_table.last().map_or(true, |&(_, _, t)| t > Local::now()) { break; }
             let (id, name, _) = schedule_table.pop().unwrap();
@@ -66,14 +79,14 @@ impl App {
             );
         }
 
-        println!("\n{}", "Upcoming:".bright_white());
+        println!("\n{}", header("Upcoming:"));
 
-        for (id, name, time) in schedule_table.iter().take(5) {
+        for (id, name, time) in schedule_table.iter().take(5).rev() {
             println!(
                 "{}  {}  {}",
                 format!("#{}", id).bright_black(),
                 name,
-                format!("@{}", time.format(DATE_FORMAT)).bright_black(),
+                date(time),
             );
         }
     }
@@ -98,9 +111,9 @@ impl App {
         self.state.finish_times.insert(routine_id.to_string(), new_finish_time.clone());
         write_state(&self.state);
 
-        println!("\n{}", routine.name.bright_white());
-        println!("Done @{}", new_finish_time.format(DATE_FORMAT));
-        println!("Next @{}", self.get_next_date(routine_id).unwrap().format(DATE_FORMAT));
+        println!("\n{}", header(&routine.name));
+        println!("Done {}", date(&new_finish_time));
+        println!("Next {}", date(&self.get_next_date(routine_id).unwrap()));
     }
 }
 
