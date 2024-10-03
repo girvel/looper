@@ -9,7 +9,9 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
  * - Publish
  * x Redo schedule as a hashmap
  * x Display message on done
+ * - --verbose flag to display more than 5 upcoming
  * - handle unwraps
+ * - error handling
  * - README
  * - Help message
  * - 1.0!
@@ -88,6 +90,10 @@ impl App {
                 name,
                 date(time),
             );
+        }
+
+        if let Some(remaining_n) = schedule_table.len().checked_sub(5usize) {
+            println!("...{} more", remaining_n);
         }
     }
 
