@@ -12,6 +12,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
  * - --verbose flag to display more than 5 upcoming
  * - handle unwraps
  * - error handling
+ * - grouping tasks by periods in the schedule config
  * - README
  * - Help message
  * - 1.0!
@@ -83,7 +84,7 @@ impl App {
 
         println!("\n{}", header("Upcoming:"));
 
-        for (id, name, time) in schedule_table.iter().take(5).rev() {
+        for (id, name, time) in schedule_table.iter().rev().take(5) {
             println!(
                 "{}  {}  {}",
                 format!("#{}", id).bright_black(),
