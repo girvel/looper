@@ -13,6 +13,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
  * - handle unwraps
  * - error handling
  * - grouping tasks by periods in the schedule config
+ * - multiple arguments for `looper done`
  * - README
  * - Help message
  * - 1.0!
