@@ -12,7 +12,8 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
  * - --verbose flag to display more than 5 upcoming
  * - handle unwraps
  * - error handling
- * - grouping tasks by periods in the schedule config
+ * x grouping tasks by periods in the schedule config
+ * - check schedule ID collisions
  * - multiple arguments for `looper done`
  * - README
  * - Help message
@@ -44,8 +45,7 @@ impl App {
     }
 
     fn get_next_date(&self, id: &str) -> Option<DateTime<Local>> {
-        let period = self.schedule.get(id)?.period.as_deref()?;
-        Some(cron::Schedule::from_str(period)
+        Some(cron::Schedule::from_str(&self.schedule.get(id)?.period)
             .unwrap()
             .after(
                 self.state.finish_times
@@ -103,11 +103,8 @@ impl App {
         let routine = &self.schedule.get(routine_id)
             .unwrap_or_else(|| panic!("Unable to find a task with id {}", routine_id));
 
-        let period = routine.period.as_ref()
-            .unwrap_or_else(|| panic!("No period specified for task with id {}", routine_id));
-
         let new_finish_time = if let Some(finish_time) = self.state.finish_times.get(routine_id) {
-            cron::Schedule::from_str(period)
+            cron::Schedule::from_str(&routine.period)
                 .unwrap()
                 .after(finish_time)
                 .next()

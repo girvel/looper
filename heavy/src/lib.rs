@@ -30,16 +30,29 @@ pub fn parse_cli() -> Cli {
 #[derive(Debug, Deserialize)]
 pub struct Routine {
     pub name: String,
-    pub period: Option<String>,
+    pub period: String,
 }
 
 pub fn read_schedule() -> HashMap<String, Routine> {
     let path = format!("{}/.config/looper/schedule.toml", env::var("HOME").unwrap());
-    toml::from_str(
+
+    let grouped: HashMap<String, HashMap<String, String>> = toml::from_str(
         fs::read_to_string(&path)
             .unwrap_or_else(|_| panic!("No configuration file at {}", &path))
             .as_str()
-    ).expect("Wrong schedule file format")
+    ).expect("Wrong schedule file format");
+
+    grouped.iter()
+        .flat_map(|(_, ids)| {
+            let period = &ids["period"];
+            ids.iter()
+                .filter(|(id, _)| *id != "period")
+                .map(|(id, name)| (id.clone(), Routine {
+                    name: name.clone(),
+                    period: period.clone(),
+                }))
+        })
+        .collect()
 }
 
 #[derive(Serialize, Deserialize)]
@@ -49,12 +62,12 @@ pub struct State {
 
 pub fn read_state() -> State {
     let path = format!("{}/.config/looper/state.toml", env::var("HOME").unwrap());
-    let Ok(content) = fs::read_to_string(&path)
+    let Ok(content) = fs::read_to_string(path)
         else { return State { finish_times: HashMap::new(), }};
     toml::from_str(content.as_str()).expect("Wrong state file format")
 }
 
 pub fn write_state(state: &State) {
     let path = format!("{}/.config/looper/state.toml", env::var("HOME").unwrap());
-    fs::write(&path, toml::to_string_pretty(state).unwrap()).unwrap();
+    fs::write(path, toml::to_string_pretty(state).unwrap()).unwrap();
 }
