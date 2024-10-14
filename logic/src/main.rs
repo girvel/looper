@@ -103,17 +103,20 @@ impl App {
         let routine = &self.schedule.get(routine_id)
             .unwrap_or_else(|| panic!("Unable to find a task with id {}", routine_id));
 
-        let new_finish_time = if let Some(finish_time) = self.state.finish_times.get(routine_id) {
-            cron::Schedule::from_str(&routine.period)
-                .unwrap()
-                .after(finish_time)
-                .next()
-                .unwrap()
-        } else {
-            Local::now()
-        };
+        // TODO use max?
+        let new_finish_time = self.state.finish_times
+            .get(routine_id)
+            .filter(|&t| t > &Local::now())
+            .map_or(
+                Local::now(),
+                |t| cron::Schedule::from_str(&routine.period)
+                    .unwrap()
+                    .after(t)
+                    .next()
+                    .unwrap()
+            );
 
-        self.state.finish_times.insert(routine_id.to_string(), new_finish_time.clone());
+        self.state.finish_times.insert(routine_id.to_string(), new_finish_time);
         write_state(&self.state);
 
         println!("\n{}", header(&routine.name));
