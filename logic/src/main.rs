@@ -11,7 +11,9 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
  * x Display message on done
  * - --verbose flag to display more than 5 upcoming
  * - handle unwraps
- * - error handling
+ * - error displaying
+ * - marking some tasks as immediate & valuable affecting colors & sorting
+ * - quick schedule/state editing
  * x grouping tasks by periods in the schedule config
  * - check schedule ID collisions
  * - multiple arguments for `looper done`
