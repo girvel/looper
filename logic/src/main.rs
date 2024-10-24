@@ -1,7 +1,7 @@
 use chrono::{DateTime, Local};
 use colored::{ColoredString, Colorize};
 use std::{cmp::Reverse, collections::HashMap, str::FromStr};
-use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine, State};
+use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, ConfigType, Routine, State};
 
 /* TODO:
  *
@@ -13,14 +13,16 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, Routine
  * - handle unwraps
  * - error displaying
  * - marking some tasks as immediate & valuable affecting colors & sorting
- * - quick schedule/state editing
+ * x quick schedule/state editing
  * x grouping tasks by periods in the schedule config
  * - check schedule ID collisions
  * - multiple arguments for `looper done`
+ * - `looper` instead of `looper show`
  * - README
  * - Help message
  * - 1.0!
  * - dotfiles
+ * - resolve TODOs
  */
 
 struct App {
@@ -125,14 +127,20 @@ impl App {
         println!("Done {}", date(&new_finish_time));
         println!("Next {}", date(&self.get_next_date(routine_id).unwrap()));
     }
+
+    fn path(&self, config_type: ConfigType) {
+        println!("\n{}", config_type.get_path());
+    }
 }
 
 fn main() {
     let cli = parse_cli();
     let mut app = App::new();
 
+    // TODO try to use trait instead
     match cli.command {
         Commands::Show => { app.show(); },
         Commands::Done { ref id } => { app.done(id); },
+        Commands::Path { config_type } => { app.path(config_type) },
     }
 }
