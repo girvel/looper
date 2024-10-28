@@ -1,6 +1,6 @@
 use chrono::{DateTime, Local};
 use colored::{ColoredString, Colorize};
-use std::{cmp::Reverse, collections::HashMap, str::FromStr};
+use std::{cmp::{max, Reverse}, collections::HashMap, str::FromStr};
 use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, ConfigType, Routine, State};
 
 /* TODO:
@@ -23,6 +23,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, ConfigT
  * - 1.0!
  * - dotfiles
  * - resolve TODOs
+ * x bug: lp done for already finished tasks does not work
  */
 
 struct App {
@@ -107,18 +108,7 @@ impl App {
         let routine = &self.schedule.get(routine_id)
             .unwrap_or_else(|| panic!("Unable to find a task with id {}", routine_id));
 
-        // TODO use max?
-        let new_finish_time = self.state.finish_times
-            .get(routine_id)
-            .filter(|&t| t > &Local::now())
-            .map_or(
-                Local::now(),
-                |t| cron::Schedule::from_str(&routine.period)
-                    .unwrap()
-                    .after(t)
-                    .next()
-                    .unwrap()
-            );
+        let new_finish_time = max(self.get_next_date(routine_id).unwrap(), Local::now());
 
         self.state.finish_times.insert(routine_id.to_string(), new_finish_time);
         write_state(&self.state);
