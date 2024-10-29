@@ -11,15 +11,15 @@ pub enum ConfigType {
 }
 
 impl ConfigType {
-    pub fn get_path(&self) -> String {
-        format!(
+    pub fn get_path(&self) -> Result<String, String> {
+        Ok(format!(
             "{}/.config/looper/{}.toml",
-            env::var("HOME").unwrap(),
+            env::var("HOME").map_err(|_| "Environment variable $HOME not set")?,
             match self {
                 ConfigType::Schedule => { "schedule" },
                 ConfigType::State => { "state" },
             },
-        )
+        ))
     }
 }
 
@@ -58,16 +58,16 @@ pub struct Routine {
     pub period: String,
 }
 
-pub fn read_schedule() -> HashMap<String, Routine> {
-    let path = ConfigType::Schedule.get_path();
+pub fn read_schedule() -> Result<HashMap<String, Routine>, String> {
+    let path = ConfigType::Schedule.get_path()?;
 
     let grouped: HashMap<String, HashMap<String, String>> = toml::from_str(
         fs::read_to_string(&path)
-            .unwrap_or_else(|_| panic!("No configuration file at {}", &path))
+            .map_err(|_| format!("No configuration file at {}", &path))?
             .as_str()
-    ).expect("Wrong schedule file format");
+    ).map_err(|_| "Wrong schedule file format")?;
 
-    grouped.iter()
+    Ok(grouped.iter()
         .flat_map(|(_, ids)| {
             let period = &ids["period"];
             ids.iter()
@@ -77,7 +77,7 @@ pub fn read_schedule() -> HashMap<String, Routine> {
                     period: period.clone(),
                 }))
         })
-        .collect()
+        .collect())
 }
 
 #[derive(Serialize, Deserialize)]
@@ -85,14 +85,15 @@ pub struct State {
     pub finish_times: HashMap<String, DateTime<Local>>,
 }
 
-pub fn read_state() -> State {
-    let path = ConfigType::State.get_path();
+pub fn read_state() -> Result<State, String> {
+    let path = ConfigType::State.get_path()?;
     let Ok(content) = fs::read_to_string(path)
-        else { return State { finish_times: HashMap::new(), }};
-    toml::from_str(content.as_str()).expect("Wrong state file format")
+        else { return Ok(State { finish_times: HashMap::new(), }) };
+    Ok(toml::from_str(content.as_str()).expect("Wrong state file format"))
 }
 
-pub fn write_state(state: &State) {
-    let path = format!("{}/.config/looper/state.toml", env::var("HOME").unwrap());
+pub fn write_state(state: &State) -> Result<(), String> {
+    let path = ConfigType::State.get_path()?;
     fs::write(path, toml::to_string_pretty(state).unwrap()).unwrap();
+    Ok(())
 }

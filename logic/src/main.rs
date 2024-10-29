@@ -10,8 +10,8 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, ConfigT
  * x Redo schedule as a hashmap
  * x Display message on done
  * - --verbose flag to display more than 5 upcoming
- * - handle unwraps
- * - error displaying
+ * x handle unwraps
+ * x error displaying
  * - marking some tasks as immediate & valuable affecting colors & sorting
  * x quick schedule/state editing
  * x grouping tasks by periods in the schedule config
@@ -42,11 +42,11 @@ fn date(date: &DateTime<Local>) -> ColoredString {
 }
 
 impl App {
-    fn new() -> Self {
-        Self {
-            schedule: read_schedule(),
-            state: read_state(),
-        }
+    fn new() -> Result<Self, String> {
+        Ok(Self {
+            schedule: read_schedule()?,
+            state: read_state()?,
+        })
     }
 
     fn get_next_date(&self, id: &str) -> Option<DateTime<Local>> {
@@ -62,7 +62,7 @@ impl App {
         )
     }
 
-    fn show(&self) {
+    fn show(&self) -> Result<(), String> {
         let mut schedule_table: Vec<_> = self.schedule.iter()
             .filter_map(|(id, routine)| {
                 let time = self.get_next_date(id)?;
@@ -102,35 +102,39 @@ impl App {
         if let Some(remaining_n) = schedule_table.len().checked_sub(5usize) {
             println!("...{} more", remaining_n);
         }
+
+        Ok(())
     }
 
-    fn done(&mut self, routine_id: &str) {
+    fn done(&mut self, routine_id: &str) -> Result<(), String> {
         let routine = &self.schedule.get(routine_id)
-            .unwrap_or_else(|| panic!("Unable to find a task with id {}", routine_id));
+            .ok_or_else(|| format!("Unable to find a task with id {}", routine_id))?;
 
         let new_finish_time = max(self.get_next_date(routine_id).unwrap(), Local::now());
 
         self.state.finish_times.insert(routine_id.to_string(), new_finish_time);
-        write_state(&self.state);
+        write_state(&self.state)?;
 
         println!("\n{}", header(&routine.name));
         println!("Done {}", date(&new_finish_time));
         println!("Next {}", date(&self.get_next_date(routine_id).unwrap()));
+
+        Ok(())
     }
 
-    fn path(&self, config_type: ConfigType) {
-        println!("\n{}", config_type.get_path());
+    fn path(&self, config_type: &ConfigType) -> Result<(), String> {
+        println!("\n{}", config_type.get_path()?);
+        Ok(())
     }
 }
 
 fn main() {
     let cli = parse_cli();
-    let mut app = App::new();
-
-    // TODO try to use trait instead
-    match cli.command {
-        Commands::Show => { app.show(); },
-        Commands::Done { ref id } => { app.done(id); },
-        Commands::Path { config_type } => { app.path(config_type) },
-    }
+    App::new()
+        .and_then(|mut app| match cli.command {
+            Commands::Show => { app.show() },
+            Commands::Done { ref id } => { app.done(id) },
+            Commands::Path { ref config_type } => { app.path(config_type) },
+        })
+        .unwrap_or_else(|message| println!("{}: {}", "ERROR".red(), message));
 }
