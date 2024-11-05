@@ -71,16 +71,26 @@ impl App {
             .collect();
 
         schedule_table.sort_by_key(|&(_, _, time)| Reverse(time));
+        let tasks_to_do = {
+            let mut result = vec![];
+            loop {
+                if schedule_table.last().map_or(true, |&(_, _, t)| t > Local::now()) { break; }
+                let (id, name, _) = schedule_table.pop().unwrap();
+                result.push((id, name));
+            }
+            result
+        };
 
         println!(
             "\n{}",
-            header(&format!("Today is {}:", Local::now().format(DATE_FORMAT))),
+            header(&format!(
+                "[{}] Today is {}:",
+                tasks_to_do.len(),
+                Local::now().format(DATE_FORMAT)
+            )),
         );
 
-        loop {
-            if schedule_table.last().map_or(true, |&(_, _, t)| t > Local::now()) { break; }
-            let (id, name, _) = schedule_table.pop().unwrap();
-
+        for (id, name) in tasks_to_do {
             println!(
                 "{}  {}",
                 format!("#{}", id).bright_black(),
