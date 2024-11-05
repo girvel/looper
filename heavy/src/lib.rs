@@ -35,7 +35,7 @@ pub enum Command {
     /// mark routine as finished (works with future routines too)
     Done {
         /// value of routine's "id" field
-        id: String,
+        ids: Vec<String>,
     },
 
     /// get path for given config

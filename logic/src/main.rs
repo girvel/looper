@@ -16,7 +16,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigTy
  * x quick schedule/state editing
  * x grouping tasks by periods in the schedule config
  * - check schedule ID collisions
- * - multiple arguments for `looper done`
+ * x multiple arguments for `looper done`
  * x `looper` instead of `looper show`
  * - README
  * - Help message
@@ -116,18 +116,20 @@ impl App {
         Ok(())
     }
 
-    fn done(&mut self, routine_id: &str) -> Result<(), String> {
-        let routine = &self.schedule.get(routine_id)
-            .ok_or_else(|| format!("Unable to find a task with id {}", routine_id))?;
+    fn done(&mut self, routine_ids: &Vec<String>) -> Result<(), String> {
+        for id in routine_ids {
+            let routine = &self.schedule.get(id)
+                .ok_or_else(|| format!("Unable to find a task with id {}", id))?;
 
-        let new_finish_time = max(self.get_next_date(routine_id).unwrap(), Local::now());
+            let new_finish_time = max(self.get_next_date(id).unwrap(), Local::now());
 
-        self.state.finish_times.insert(routine_id.to_string(), new_finish_time);
-        write_state(&self.state)?;
+            self.state.finish_times.insert(id.to_string(), new_finish_time);
+            write_state(&self.state)?;
 
-        println!("\n{}", header(&routine.name));
-        println!("Done {}", date(&new_finish_time));
-        println!("Next {}", date(&self.get_next_date(routine_id).unwrap()));
+            println!("\n{}", header(&routine.name));
+            println!("Done {}", date(&new_finish_time));
+            println!("Next {}", date(&self.get_next_date(id).unwrap()));
+        }
 
         Ok(())
     }
@@ -143,7 +145,7 @@ fn main() {
     App::new()
         .and_then(|mut app| match cli.command {
             None => { app.show() },
-            Some(Command::Done { ref id }) => { app.done(id) },
+            Some(Command::Done { ref ids }) => { app.done(ids) },
             Some(Command::Path { ref config_type }) => { app.path(config_type) },
         })
         .unwrap_or_else(|message| println!("{}: {}", "ERROR".red(), message));
