@@ -1,7 +1,7 @@
 use chrono::{DateTime, Local};
 use colored::{ColoredString, Colorize};
 use std::{cmp::{max, Reverse}, collections::HashMap, str::FromStr};
-use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, ConfigType, Routine, State};
+use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigType, Routine, State};
 
 /* TODO:
  *
@@ -17,7 +17,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Commands, ConfigT
  * x grouping tasks by periods in the schedule config
  * - check schedule ID collisions
  * - multiple arguments for `looper done`
- * - `looper` instead of `looper show`
+ * x `looper` instead of `looper show`
  * - README
  * - Help message
  * - 1.0!
@@ -142,9 +142,9 @@ fn main() {
     let cli = parse_cli();
     App::new()
         .and_then(|mut app| match cli.command {
-            Commands::Show => { app.show() },
-            Commands::Done { ref id } => { app.done(id) },
-            Commands::Path { ref config_type } => { app.path(config_type) },
+            None => { app.show() },
+            Some(Command::Done { ref id }) => { app.done(id) },
+            Some(Command::Path { ref config_type }) => { app.path(config_type) },
         })
         .unwrap_or_else(|message| println!("{}: {}", "ERROR".red(), message));
 }

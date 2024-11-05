@@ -27,14 +27,11 @@ impl ConfigType {
 #[command(version, about, long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
-    pub command: Commands,
+    pub command: Option<Command>,
 }
 
 #[derive(Subcommand)]
-pub enum Commands {
-    /// show current and upcoming routines
-    Show,
-
+pub enum Command {
     /// mark routine as finished (works with future routines too)
     Done {
         /// value of routine's "id" field
