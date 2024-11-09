@@ -6,7 +6,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigTy
 /* TODO:
  *
  * x Install as executable
- * - Publish
+ * - Publish & update README#installation
  * x Redo schedule as a hashmap
  * x Display message on done
  * x --verbose flag to display more than 10 upcoming
@@ -18,7 +18,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigTy
  * - check schedule ID collisions
  * x multiple arguments for `looper done`
  * x `looper` instead of `looper show`
- * - README
+ * x README
  * - Help message
  * - 1.0!
  * x dotfiles
