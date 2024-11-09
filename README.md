@@ -1,3 +1,5 @@
+# Looper — routine manager
+
 `looper` is a configuration file–driven cron-style manager for reoccuring tasks. You can even accomplish your one-time tasks with it: you create an entry "do your one time tasks from your todoist" for "0 0 4 * * Sun *" and all your todos magically get done!
 
 ## TL;DR usage
