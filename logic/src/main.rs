@@ -9,7 +9,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigTy
  * - Publish
  * x Redo schedule as a hashmap
  * x Display message on done
- * - --verbose flag to display more than 5 upcoming
+ * x --verbose flag to display more than 10 upcoming
  * x handle unwraps
  * x error displaying
  * - marking some tasks as immediate & valuable affecting colors & sorting
@@ -32,6 +32,7 @@ struct App {
 }
 
 const DATE_FORMAT: &str = "%d-%b-%Y";
+const UPCOMING_N: usize = 10;
 
 fn header(text: &str) -> ColoredString {
     text.bright_white().bold()
@@ -62,7 +63,7 @@ impl App {
         )
     }
 
-    fn show(&self) -> Result<(), String> {
+    fn show(&self, verbose: bool) -> Result<(), String> {
         let mut schedule_table: Vec<_> = self.schedule.iter()
             .filter_map(|(id, routine)| {
                 let time = self.get_next_date(id)?;
@@ -100,7 +101,11 @@ impl App {
 
         println!("\n{}", header("Upcoming:"));
 
-        for (id, name, time) in schedule_table.iter().rev().take(5) {
+        for (id, name, time) in schedule_table
+            .iter()
+            .rev()
+            .take(if verbose { schedule_table.len() } else { UPCOMING_N })
+        {
             println!(
                 "{}  {}  {}",
                 format!("#{}", id).bright_black(),
@@ -109,8 +114,10 @@ impl App {
             );
         }
 
-        if let Some(remaining_n) = schedule_table.len().checked_sub(5usize) {
-            println!("...{} more", remaining_n);
+        if !verbose {
+            if let Some(remaining_n) = schedule_table.len().checked_sub(UPCOMING_N) {
+                println!("...{} more", remaining_n);
+            }
         }
 
         Ok(())
@@ -144,9 +151,9 @@ fn main() {
     let cli = parse_cli();
     App::new()
         .and_then(|mut app| match cli.command {
-            None => { app.show() },
-            Some(Command::Done { ref ids }) => { app.done(ids) },
-            Some(Command::Path { ref config_type }) => { app.path(config_type) },
+            Command::Show { verbose } => { app.show(verbose) },
+            Command::Done { ref ids } => { app.done(ids) },
+            Command::Path { ref config_type } => { app.path(config_type) },
         })
         .unwrap_or_else(|message| println!("{}: {}", "ERROR".red(), message));
 }

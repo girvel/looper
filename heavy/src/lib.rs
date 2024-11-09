@@ -8,11 +8,18 @@ use chrono::{Local, DateTime};
 #[command(version, about, long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
-    pub command: Option<Command>,
+    pub command: Command,
 }
 
 #[derive(Subcommand)]
 pub enum Command {
+    /// show current state of the schedule
+    Show {
+        /// whether to display the long version
+        #[arg(short, long)]
+        verbose: bool,
+    },
+
     /// mark routine as finished (works with future routines too)
     Done {
         /// value of routine's "id" field
