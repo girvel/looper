@@ -1,6 +1,6 @@
 `looper` is a configuration file–driven cron-style manager for reoccuring tasks. You can even accomplish your one-time tasks with it: you create an entry "do your one time tasks from your todoist" for "0 0 4 * * Sun *" and all your todos magically get done!
 
-# TL;DR usage
+## TL;DR usage
 
 Displaying the schedule:
 
@@ -36,7 +36,7 @@ Completing tasks:
 looper done 1d 0e 0c
 ```
 
-# Configuration file example
+## Configuration file example
 
 Use `looper path` to get the path.
 
@@ -53,7 +53,7 @@ period = "0 0 3 * * * *"
 02 = "water the plants"
 ```
 
-# Installation
+## Installation
 
 Clone the repository, cd into it, run
 
@@ -61,7 +61,7 @@ Clone the repository, cd into it, run
 cargo install --path logic
 ```
 
-# Recommended practices
+## Recommended practices
 
 - alias "looper" as "lp" for frequent use
 - keep the ID for your next task in the configuration file header comment
