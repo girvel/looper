@@ -21,7 +21,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigTy
  * - README
  * - Help message
  * - 1.0!
- * - dotfiles
+ * x dotfiles
  * - resolve TODOs
  * x bug: lp done for already finished tasks does not work
  */

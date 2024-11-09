@@ -4,25 +4,6 @@ use std::{env, fs, collections::HashMap};
 use chrono::{Local, DateTime};
 
 
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
-pub enum ConfigType {
-    Schedule,
-    State,
-}
-
-impl ConfigType {
-    pub fn get_path(&self) -> Result<String, String> {
-        Ok(format!(
-            "{}/.config/looper/{}.toml",
-            env::var("HOME").map_err(|_| "Environment variable $HOME not set")?,
-            match self {
-                ConfigType::Schedule => { "schedule" },
-                ConfigType::State => { "state" },
-            },
-        ))
-    }
-}
-
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 pub struct Cli {
@@ -47,6 +28,25 @@ pub enum Command {
 
 pub fn parse_cli() -> Cli {
     Cli::parse()
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
+pub enum ConfigType {
+    Schedule,
+    State,
+}
+
+impl ConfigType {
+    pub fn get_path(&self) -> Result<String, String> {
+        Ok(format!(
+            "{}/.config/looper/{}.toml",
+            env::var("HOME").map_err(|_| "Environment variable $HOME not set")?,
+            match self {
+                ConfigType::Schedule => { "schedule" },
+                ConfigType::State => { "state" },
+            },
+        ))
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -82,6 +82,8 @@ pub struct State {
     pub finish_times: HashMap<String, DateTime<Local>>,
 }
 
+// TODO probably should be like ConfigType.read
+// TODO probably should have separate Cli & Data files
 pub fn read_state() -> Result<State, String> {
     let path = ConfigType::State.get_path()?;
     let Ok(content) = fs::read_to_string(path)

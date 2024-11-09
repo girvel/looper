@@ -1,0 +1,10 @@
+```
+girvel@midgard /mnt/d/workshop/ % lp
+
+[11] Today is 07-Nov-2024:
+1e  admin hour: todoist        never
+0e  clean the toilet           never
+0d  clean reflective surfaces  01-Oct-2024
+```
+
+??
