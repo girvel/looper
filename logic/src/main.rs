@@ -24,6 +24,7 @@ use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigTy
  * x dotfiles
  * - resolve TODOs
  * x bug: lp done for already finished tasks does not work
+ * - bug: `lp done id1 id2 wrong_id id3` does not complete id3
  */
 
 struct App {
@@ -91,17 +92,24 @@ impl App {
             )),
         );
 
-        for (id, name) in tasks_to_do {
-            println!(
-                "{}  {}",
-                format!("#{}", id).bright_black(),
-                name,
-            );
+        if tasks_to_do.is_empty() {
+            println!("-- all done --");
+        } else {
+            for (id, name) in tasks_to_do {
+                println!(
+                    "{}  {}",
+                    format!("#{}", id).bright_black(),
+                    name,
+                );
+            }
         }
+
+        if schedule_table.is_empty() { return Ok(()); }
 
         println!("\n{}", header("Upcoming:"));
 
-        for (id, name, time) in schedule_table
+        for (id, name, time)
+        in schedule_table
             .iter()
             .rev()
             .take(if verbose { schedule_table.len() } else { UPCOMING_N })
