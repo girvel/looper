@@ -86,7 +86,7 @@ impl App {
         println!(
             "\n{}",
             header(&format!(
-                "[{}] Today is {}:",
+                "[{}] {}",
                 tasks_to_do.len(),
                 Local::now().format(DATE_FORMAT)
             )),
@@ -98,7 +98,7 @@ impl App {
             for (id, name) in tasks_to_do {
                 println!(
                     "{}  {}",
-                    format!("#{}", id).bright_black(),
+                    format!("#{}", id).green(),
                     name,
                 );
             }
