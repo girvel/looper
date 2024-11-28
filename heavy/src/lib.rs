@@ -69,7 +69,7 @@ pub fn read_schedule() -> Result<HashMap<String, Routine>, String> {
         fs::read_to_string(&path)
             .map_err(|_| format!("No configuration file at {}", &path))?
             .as_str()
-    ).map_err(|_| "Wrong schedule file format")?;
+    ).map_err(|_| format!("Wrong schedule file format at {}", &path))?;
 
     Ok(grouped.iter()
         .flat_map(|(_, ids)| {
