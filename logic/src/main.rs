@@ -3,32 +3,6 @@ use colored::{ColoredString, Colorize};
 use std::{cmp::{max, Reverse}, collections::HashMap, str::FromStr};
 use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigType, Routine, State};
 
-/* TODO:
- *
- * x Install as executable
- * x Redo schedule as a hashmap
- * x Display message on done
- * x --verbose flag to display more than 10 upcoming
- * x handle unwraps
- * x error displaying
- * x quick schedule/state editing
- * x grouping tasks by periods in the schedule config
- * x multiple arguments for `looper done`
- * x `looper` instead of `looper show`
- * x README
- * - Help message
- * x dotfiles
- * - resolve TODOs
- * x bug: lp done for already finished tasks does not work
- * - bug: `lp done id1 id2 wrong_id id3` does not complete id3
- * - bug: `lp path schedule` errors if schedule is missing; use lazy objects?
- * - check schedule ID collisions
- * - 1.0!
- * - Publish & update README#installation
- *
- * 2.0:
- * - marking some tasks as immediate & valuable affecting colors & sorting
- */
 
 struct App {
     schedule: HashMap<String, Routine>,
