@@ -1,6 +1,9 @@
 # Looper — routine manager
 
-`looper` is a configuration file–driven cron-style manager for reoccuring tasks. You can even accomplish your one-time tasks with it: you create an entry "do your one time tasks from your todoist" for "0 0 4 * * Sun *" and all your todos magically get done!
+`looper` is a personal task manager for reoccuring tasks, aiming to be as minimal & undercomplicated as possible. Basically a single TOML schedule (with TOML itself doing most of the heavy lifting) and small CLI frontend. `looper` has these goals:
+
+- exercise low software complexity
+- be as pleasant as possible to motivate own usage
 
 ## TL;DR usage
 
