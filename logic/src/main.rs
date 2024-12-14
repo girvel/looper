@@ -1,7 +1,10 @@
 use chrono::{DateTime, Local};
 use colored::{ColoredString, Colorize};
 use std::{cmp::{max, Reverse}, collections::HashMap, str::FromStr};
-use heavy::{parse_cli, read_schedule, read_state, write_state, Command, ConfigType, Routine, State};
+use heavy::{
+    cli::{parse, Command}, 
+    config::{read_schedule, read_state, write_state, ConfigType, Routine, State}
+};
 
 
 struct App {
@@ -133,7 +136,7 @@ impl App {
 }
 
 fn main() {
-    let cli = parse_cli();
+    let cli = parse();
     App::new()
         .and_then(|mut app| match cli.command {
             Command::Show { verbose } => { app.show(verbose) },
