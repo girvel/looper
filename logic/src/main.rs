@@ -1,6 +1,6 @@
 use chrono::{DateTime, Local};
 use std::{cmp::{max, Reverse}, path::PathBuf, str::FromStr};
-use heavy::{
+use looper_heavy::{
     cli::{parse, Command}, 
     config::{read_schedule, read_state, write_state, ConfigType, State, Schedule}
 };
