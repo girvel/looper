@@ -1,5 +1,4 @@
 use chrono::{DateTime, Local};
-use colored::{ColoredString, Colorize};
 use std::{cmp::{max, Reverse}, path::PathBuf, str::FromStr};
 use heavy::{
     cli::{parse, Command}, 
@@ -7,18 +6,36 @@ use heavy::{
 };
 
 
-const DATE_FORMAT: &str = "%d-%b-%Y";
-const DATETIME_FORMAT: &str = "%d-%b-%Y %H:%M";
 const UPCOMING_N: usize = 10;
 
 // TODO group with module?
-fn header(text: &str) -> ColoredString {
-    text.bright_white().bold()
-}
+mod show {
+    use chrono::{DateTime, Local};
+    use colored::{ColoredString, Colorize};
 
-fn date(date: &DateTime<Local>, show_time: bool) -> ColoredString {
-    let format = if show_time { DATETIME_FORMAT } else { DATE_FORMAT };
-    format!("@{}", date.format(format)).bright_black()
+    pub const DATE_FORMAT: &str = "%d-%b-%Y";
+    pub const DATETIME_FORMAT: &str = "%d-%b-%Y %H:%M";
+
+    pub fn header(text: &str) -> ColoredString {
+        text.bright_white().bold()
+    }
+
+    pub fn date(date: &DateTime<Local>, show_time: bool) -> ColoredString {
+        let format = if show_time { DATETIME_FORMAT } else { DATE_FORMAT };
+        format!("@{}", date.format(format)).bright_black()
+    }
+
+    pub fn active_id(id: &str) -> ColoredString {
+        format!("#{}", id).green()
+    }
+
+    pub fn inactive_id(id: &str) -> ColoredString {
+        format!("#{}", id).bright_black()
+    }
+
+    pub fn error(message: &str) -> ColoredString {
+        format!("{}: {}", "ERROR".red(), message).into()
+    }
 }
 
 fn get_next_date(schedule: &Schedule, state: &State, id: &str)
@@ -61,10 +78,10 @@ fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
 
     println!(
         "\n{}",
-        header(&format!(
+        show::header(&format!(
             "[{}] {}",
             tasks_to_do.len(),
-            Local::now().format(DATE_FORMAT)
+            Local::now().format(show::DATE_FORMAT)
         )),
     );
 
@@ -74,7 +91,7 @@ fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
         for (id, name) in tasks_to_do {
             println!(
                 "{}  {}",
-                format!("#{}", id).green(),
+                show::active_id(id),
                 name,
             );
         }
@@ -82,7 +99,7 @@ fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
 
     if schedule_table.is_empty() { return Ok(()); }
 
-    println!("\n{}", header("Upcoming:"));
+    println!("\n{}", show::header("Upcoming:"));
 
     for (id, name, time)
     in schedule_table
@@ -92,9 +109,9 @@ fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
     {
         println!(
             "{}  {}  {}",
-            format!("#{}", id).bright_black(),
+            show::inactive_id(id),
             name,
-            date(time, Local::now().date_naive() == time.date_naive()),
+            show::date(time, Local::now().date_naive() == time.date_naive()),
         );
     }
 
@@ -123,9 +140,9 @@ fn done(config_folder: Option<&PathBuf>, routine_ids: &Vec<String>) -> Result<()
         let new_next_time = get_next_date(&schedule, &state, id).unwrap();
         let show_time = new_next_time.date_naive() == new_finish_time.date_naive();
 
-        println!("\n{}", header(&routine.name));
-        println!("Done {}", date(&new_finish_time, show_time));
-        println!("Next {}", date(&new_next_time, show_time));
+        println!("\n{}", show::header(&routine.name));
+        println!("Done {}", show::date(&new_finish_time, show_time));
+        println!("Next {}", show::date(&new_next_time, show_time));
     }
 
     Ok(())
@@ -143,5 +160,5 @@ fn main() {
         Command::Done { ref ids } => { done(cli.config_folder.as_ref(), ids) },
         Command::Path { ref config_type } => { path(cli.config_folder.as_ref(), config_type) },
     }
-    .unwrap_or_else(|message| println!("{}: {}", "ERROR".red(), message));
+    .unwrap_or_else(|message| println!("{}", show::error(&message)));
 }
