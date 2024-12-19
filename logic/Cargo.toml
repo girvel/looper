@@ -3,6 +3,7 @@ name = "looper"
 version = "1.0.0"
 authors = ["girvel"]
 edition = "2021"
+license-file = "../LICENSE"
 description = "personal task manager for reoccuring tasks"
 repository = "https://github.com/girvel/looper"
 keywords = ["cli"]

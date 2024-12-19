@@ -1,8 +1,11 @@
 [package]
 name = "looper_heavy"
 version = "1.0.0"
+authors = ["girvel"]
 edition = "2021"
+license-file = "../LICENSE"
 description = "Heavy to compile stuff for looper"
+repository = "https://github.com/girvel/looper"
 
 [dependencies]
 toml = "0.8"
