@@ -8,7 +8,6 @@ use heavy::{
 
 const UPCOMING_N: usize = 10;
 
-// TODO group with module?
 mod show {
     use chrono::{DateTime, Local};
     use colored::{ColoredString, Colorize};
