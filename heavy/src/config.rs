@@ -29,7 +29,11 @@ pub struct Routine {
     pub period: String,
 }
 
-pub fn read_schedule() -> Result<HashMap<String, Routine>, String> {
+
+
+pub type Schedule = HashMap<String, Routine>;
+
+pub fn read_schedule() -> Result<Schedule, String> {
     let path = ConfigType::Schedule.get_path()?;
 
     let grouped: HashMap<String, HashMap<String, String>> = toml::from_str(
@@ -51,16 +55,18 @@ pub fn read_schedule() -> Result<HashMap<String, Routine>, String> {
         .collect())
 }
 
+pub type State = HashMap<String, DateTime<Local>>;
+
 #[derive(Serialize, Deserialize)]
-pub struct State {
-    pub finish_times: HashMap<String, DateTime<Local>>,
+struct StateContainer {
+    finish_times: State,
 }
 
 pub fn read_state() -> Result<State, String> {
     let path = ConfigType::State.get_path()?;
     let Ok(content) = fs::read_to_string(path)
-        else { return Ok(State { finish_times: HashMap::new(), }) };
-    Ok(toml::from_str(content.as_str()).expect("Wrong state file format"))
+        else { return Ok(HashMap::new()) };
+    Ok(toml::from_str::<StateContainer>(content.as_str()).expect("Wrong state file format").finish_times)
 }
 
 pub fn write_state(state: &State) -> Result<(), String> {
