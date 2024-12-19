@@ -41,6 +41,12 @@ Completing tasks:
 looper done 1d 0e 0c
 ```
 
+## Installation
+
+```bash
+cargo install girvel_looper
+```
+
 ## Configuration
 
 Schedule is set in single TOML file. Use `looper path schedule` to get the path. The sections are cron expression strings, defining frequency of the following routines; each key-value pair is a single routine: the key is a globally unique ID (any string that would be comfortable to use; I prefer two-digit hexadecimal numbers), the value is a full description.

@@ -1,6 +1,6 @@
 [package]
 name = "girvel_looper"
-version = "1.0.1"
+version = "1.0.2"
 authors = ["girvel"]
 edition = "2021"
 readme = "../README.md"
