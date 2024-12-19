@@ -50,6 +50,28 @@ pub fn read_schedule(config_folder: Option<&PathBuf>) -> Result<Schedule, String
             .as_str()
     ).map_err(|_| format!("Wrong schedule file format at {}", &path))?;
 
+    let mut result = HashMap::new();
+    for ids in grouped.values() {
+        let period = &ids["period"];
+        for (id, name) in ids {
+            if id == "period" { continue; }
+
+            if let Some(old_entry) = result.insert(id.clone(), Routine {
+                name: name.clone(),
+                period: period.clone(),
+            }) {
+                return Err(format!(
+                    "Key collision at #{}: {:?} with period {:?} and {:?} with period {:?}",
+                    id.clone(),
+                    old_entry.name,
+                    old_entry.period,
+                    name.clone(),
+                    period.clone(),
+                ));
+            }
+        }
+    }
+
     Ok(grouped.iter()
         .flat_map(|(_, ids)| {
             let period = &ids["period"];
