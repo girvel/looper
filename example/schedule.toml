@@ -28,7 +28,7 @@
 
 # seasonal
 ["0 0 3 15 Dec,Mar,Jun,Sep * *"]
-07 = "cell toenails"
+07 = "sell toenails"
 08 = "buy sausages (1000 lb)"
 0c = "buy ritual paint (3), rags (3)"
 09 = "[duty] fight hornets"

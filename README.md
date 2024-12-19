@@ -14,25 +14,23 @@ looper show
 ```
 
 ```
-[5] Today is 09-Nov-2024:
-#1d  clean the room
-#0e  clean the toilet
-#13  clean the windows
-#0d  clean reflective surfaces
-#0c  water the plants
+[5] 20-Dec-2024
+#0f  [today] advance alchemic knowledge
+#00  [duty] journal tribe movements
+#05  clean the staples
+#0d  wash my pants
+#0c  buy ritual paint (3), rags (3)
 
 Upcoming:
-#0a  dust cleanup  @10-Nov-2024
-#01  journal  @10-Nov-2024
-#23  wash sweats  @10-Nov-2024
-#1e  touch grass  @10-Nov-2024
-#02  change of bedsheets  @15-Nov-2024
-#15  change of towels in kitchen, bathroom  @15-Nov-2024
-#1a  maintenance workout  @18-Nov-2024
-#04  change lenses  @18-Nov-2024
-#21  buy groceries  @01-Dec-2024
-#18  clean the water heater  @01-Dec-2024
-...16 more
+#0a  [today] practice swordcraft  @20-Dec-2024 03:00
+#06  clean the dungeon  @22-Dec-2024
+#04  send anonymous prank letters to the King  @01-Jan-2025
+#0b  hunt  @01-Jan-2025
+#02  [!] change oil in lamps  @03-Jan-2025
+#07  sell toenails  @15-Mar-2025
+#09  [duty] fight hornets  @15-Mar-2025
+#08  buy sausages (1000 lb)  @15-Mar-2025
+#03  [!] feed the platypus bear  @01-Apr-2025
 ```
 
 Completing tasks:
