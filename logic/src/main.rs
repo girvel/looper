@@ -24,7 +24,7 @@ fn get_next_date(schedule: &Schedule, state: &State, id: &str)
     let cron_string = &schedule.get(id).ok_or(format!("Missing id {}", id))?.period;
 
     Ok(cron::Schedule::from_str(cron_string)
-        .unwrap()
+        .map_err(|err| err.to_string())?
         .after(
             state
                 .get(id)
