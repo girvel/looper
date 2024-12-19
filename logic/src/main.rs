@@ -132,10 +132,16 @@ fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
 fn done(config_folder: Option<&PathBuf>, routine_ids: &Vec<String>) -> Result<(), String> {
     let schedule = read_schedule(config_folder)?;
     let mut state = read_state(config_folder)?;
+    let mut wrong_ids = Vec::new();
 
     for id in routine_ids {
-        let routine = &schedule.get(id)
-            .ok_or_else(|| format!("Unable to find a task with id {}", id))?;
+        let routine = &match schedule.get(id) {
+            Some(r) => r,
+            None => {
+                wrong_ids.push(id.clone());
+                continue;
+            }
+        };
 
         let new_finish_time = max(get_next_date(&schedule, &state, id).unwrap(), Local::now());
 
@@ -150,7 +156,11 @@ fn done(config_folder: Option<&PathBuf>, routine_ids: &Vec<String>) -> Result<()
         println!("Next {}", show::date(&new_next_time, show_time));
     }
 
-    Ok(())
+    if wrong_ids.is_empty() {
+        Ok(())
+    } else {
+        Err(format!("Unable to find a task with ids {:?}", wrong_ids))
+    }
 }
 
 fn path(config_folder: Option<&PathBuf>, config_type: &ConfigType) -> Result<(), String> {
@@ -165,5 +175,5 @@ fn main() {
         Command::Done { ref ids } => { done(cli.config_folder.as_ref(), ids) },
         Command::Path { ref config_type } => { path(cli.config_folder.as_ref(), config_type) },
     }
-    .unwrap_or_else(|message| println!("{}", show::error(&message)));
+    .unwrap_or_else(|message| println!("\n{}", show::error(&message)));
 }
