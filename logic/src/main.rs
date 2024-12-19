@@ -8,14 +8,17 @@ use heavy::{
 
 
 const DATE_FORMAT: &str = "%d-%b-%Y";
+const DATETIME_FORMAT: &str = "%d-%b-%Y %H:%M";
 const UPCOMING_N: usize = 10;
 
+// TODO group with module?
 fn header(text: &str) -> ColoredString {
     text.bright_white().bold()
 }
 
-fn date(date: &DateTime<Local>) -> ColoredString {
-    format!("@{}", date.format(DATE_FORMAT)).bright_black()
+fn date(date: &DateTime<Local>, show_time: bool) -> ColoredString {
+    let format = if show_time { DATETIME_FORMAT } else { DATE_FORMAT };
+    format!("@{}", date.format(format)).bright_black()
 }
 
 fn get_next_date(schedule: &Schedule, state: &State, id: &str)
@@ -91,7 +94,7 @@ fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
             "{}  {}  {}",
             format!("#{}", id).bright_black(),
             name,
-            date(time),
+            date(time, Local::now().date_naive() == time.date_naive()),
         );
     }
 
@@ -117,9 +120,12 @@ fn done(config_folder: Option<&PathBuf>, routine_ids: &Vec<String>) -> Result<()
         state.insert(id.to_string(), new_finish_time);
         write_state(config_folder, &state)?;
 
+        let new_next_time = get_next_date(&schedule, &state, id).unwrap();
+        let show_time = new_next_time.date_naive() == new_finish_time.date_naive();
+
         println!("\n{}", header(&routine.name));
-        println!("Done {}", date(&new_finish_time));
-        println!("Next {}", date(&get_next_date(&schedule, &state, id).unwrap()));
+        println!("Done {}", date(&new_finish_time, show_time));
+        println!("Next {}", date(&new_next_time, show_time));
     }
 
     Ok(())
