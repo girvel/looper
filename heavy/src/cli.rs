@@ -4,8 +4,11 @@ use crate::config::ConfigType;
 
 
 #[derive(Parser)]
-#[command(version, about, long_about = None)]
+#[command(name = "Looper")]
+#[command(version = "1.0")]
+#[command(about = "Personal task manager for reoccuring tasks")]
 pub struct Cli {
+    /// Path to folder containing state.toml & schedule.toml
     #[arg(long, value_name = "FOLDER")]
     pub config_folder: Option<PathBuf>,
 
