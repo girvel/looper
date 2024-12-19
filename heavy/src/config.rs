@@ -51,11 +51,8 @@ pub fn read_schedule(config_folder: Option<&PathBuf>) -> Result<Schedule, String
     ).map_err(|_| format!("Wrong schedule file format at {}", &path))?;
 
     let mut result = HashMap::new();
-    for ids in grouped.values() {
-        let period = &ids["period"];
+    for (period, ids) in &grouped {
         for (id, name) in ids {
-            if id == "period" { continue; }
-
             if let Some(old_entry) = result.insert(id.clone(), Routine {
                 name: name.clone(),
                 period: period.clone(),
@@ -72,17 +69,7 @@ pub fn read_schedule(config_folder: Option<&PathBuf>) -> Result<Schedule, String
         }
     }
 
-    Ok(grouped.iter()
-        .flat_map(|(_, ids)| {
-            let period = &ids["period"];
-            ids.iter()
-                .filter(|(id, _)| *id != "period")
-                .map(|(id, name)| (id.clone(), Routine {
-                    name: name.clone(),
-                    period: period.clone(),
-                }))
-        })
-        .collect())
+    Ok(result)
 }
 
 pub type State = HashMap<String, DateTime<Local>>;
