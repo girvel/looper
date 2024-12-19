@@ -188,6 +188,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
+name = "girvel_looper"
+version = "1.0.0"
+dependencies = [
+ "chrono",
+ "colored",
+ "cron",
+ "looper_heavy",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -264,16 +274,6 @@ name = "log"
 version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
-
-[[package]]
-name = "looper"
-version = "1.0.0"
-dependencies = [
- "chrono",
- "colored",
- "cron",
- "looper_heavy",
-]
 
 [[package]]
 name = "looper_heavy"
