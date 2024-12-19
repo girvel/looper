@@ -1,6 +1,6 @@
 use chrono::{DateTime, Local};
 use colored::{ColoredString, Colorize};
-use std::{cmp::{max, Reverse}, str::FromStr};
+use std::{cmp::{max, Reverse}, path::PathBuf, str::FromStr};
 use heavy::{
     cli::{parse, Command}, 
     config::{read_schedule, read_state, write_state, ConfigType, State, Schedule}
@@ -35,9 +35,9 @@ fn get_next_date(schedule: &Schedule, state: &State, id: &str)
     )
 }
 
-fn show(verbose: bool) -> Result<(), String> {
-    let schedule = read_schedule()?;
-    let state = read_state()?;
+fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
+    let schedule = read_schedule(config_folder)?;
+    let state = read_state(config_folder)?;
 
     let mut schedule_table = Vec::new();
     for (id, routine) in &schedule {
@@ -104,9 +104,9 @@ fn show(verbose: bool) -> Result<(), String> {
     Ok(())
 }
 
-fn done(routine_ids: &Vec<String>) -> Result<(), String> {
-    let schedule = read_schedule()?;
-    let mut state = read_state()?;
+fn done(config_folder: Option<&PathBuf>, routine_ids: &Vec<String>) -> Result<(), String> {
+    let schedule = read_schedule(config_folder)?;
+    let mut state = read_state(config_folder)?;
 
     for id in routine_ids {
         let routine = &schedule.get(id)
@@ -115,7 +115,7 @@ fn done(routine_ids: &Vec<String>) -> Result<(), String> {
         let new_finish_time = max(get_next_date(&schedule, &state, id).unwrap(), Local::now());
 
         state.insert(id.to_string(), new_finish_time);
-        write_state(&state)?;
+        write_state(config_folder, &state)?;
 
         println!("\n{}", header(&routine.name));
         println!("Done {}", date(&new_finish_time));
@@ -125,17 +125,17 @@ fn done(routine_ids: &Vec<String>) -> Result<(), String> {
     Ok(())
 }
 
-fn path(config_type: &ConfigType) -> Result<(), String> {
-    println!("\n{}", config_type.get_path()?);
+fn path(config_folder: Option<&PathBuf>, config_type: &ConfigType) -> Result<(), String> {
+    println!("\n{}", config_type.get_path(config_folder)?);
     Ok(())
 }
 
 fn main() {
     let cli = parse();
     match cli.command {
-        Command::Show { verbose } => { show(verbose) },
-        Command::Done { ref ids } => { done(ids) },
-        Command::Path { ref config_type } => { path(config_type) },
+        Command::Show { verbose } => { show(cli.config_folder.as_ref(), verbose) },
+        Command::Done { ref ids } => { done(cli.config_folder.as_ref(), ids) },
+        Command::Path { ref config_type } => { path(cli.config_folder.as_ref(), config_type) },
     }
     .unwrap_or_else(|message| println!("{}: {}", "ERROR".red(), message));
 }

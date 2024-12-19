@@ -6,7 +6,8 @@ use crate::config::ConfigType;
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 pub struct Cli {
-    pub base_path: Option<PathBuf>,
+    #[arg(long, value_name = "FOLDER")]
+    pub config_folder: Option<PathBuf>,
 
     #[command(subcommand)]
     pub command: Command,
@@ -21,7 +22,7 @@ pub enum Command {
         verbose: bool,
     },
 
-    /// mark routine as finished (works with future routines too)
+    /// mark routine as finished (works with upcoming routines too)
     Done {
         /// value of routine's "id" field
         ids: Vec<String>,
@@ -31,7 +32,7 @@ pub enum Command {
     Path {
         /// the type of the config
         config_type: ConfigType,
-    }
+    },
 }
 
 pub fn parse() -> Cli {
