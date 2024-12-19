@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 use std::{collections::HashMap, env, fs, path::PathBuf};
 use chrono::{Local, DateTime};
 use clap::ValueEnum;
@@ -65,16 +65,11 @@ pub fn read_schedule(config_folder: Option<&PathBuf>) -> Result<Schedule, String
 
 pub type State = HashMap<String, DateTime<Local>>;
 
-#[derive(Serialize, Deserialize)]
-struct StateContainer {
-    finish_times: State,
-}
-
 pub fn read_state(config_folder: Option<&PathBuf>) -> Result<State, String> {
     let path = ConfigType::State.get_path(config_folder)?;
     let Ok(content) = fs::read_to_string(path)
         else { return Ok(HashMap::new()) };
-    Ok(toml::from_str::<StateContainer>(content.as_str()).expect("Wrong state file format").finish_times)
+    Ok(toml::from_str(content.as_str()).expect("Wrong state file format"))
 }
 
 pub fn write_state(config_folder: Option<&PathBuf>, state: &State) -> Result<(), String> {
