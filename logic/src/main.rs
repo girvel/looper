@@ -22,7 +22,13 @@ mod show {
 
     pub fn date(date: &DateTime<Local>, show_time: bool) -> ColoredString {
         let format = if show_time { DATETIME_FORMAT } else { DATE_FORMAT };
-        format!("@{}", date.format(format)).bright_black()
+        let result = format!("@{}", date.format(format));
+
+        if date.date_naive() == Local::now().date_naive() {
+            result.yellow()
+        } else {
+            result.bright_black()
+        }
     }
 
     pub fn active_id(id: &str) -> ColoredString {
