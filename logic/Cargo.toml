@@ -3,6 +3,7 @@ name = "girvel_looper"
 version = "1.0.0"
 authors = ["girvel"]
 edition = "2021"
+readme = "../README.md"
 license-file = "../LICENSE"
 description = "personal task manager for reoccuring tasks"
 repository = "https://github.com/girvel/looper"
