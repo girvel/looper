@@ -15,22 +15,22 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Command {
-    /// show current state of the schedule
+    /// Show current state of the schedule
     Show {
-        /// whether to display the long version
+        /// Whether to display the long version
         #[arg(short, long)]
         verbose: bool,
     },
 
-    /// mark routine as finished (works with upcoming routines too)
+    /// Mark routine as finished (works with upcoming routines too)
     Done {
-        /// value of routine's "id" field
+        /// Routine's unique ID
         ids: Vec<String>,
     },
 
-    /// get path for given config
+    /// Get path for given config
     Path {
-        /// the type of the config
+        /// Type of the config
         config_type: ConfigType,
     },
 }
