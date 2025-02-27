@@ -1,5 +1,5 @@
 use chrono::{DateTime, Local};
-use std::{cmp::{max, Ordering}, path::PathBuf, str::FromStr};
+use std::{cmp::max, path::PathBuf, str::FromStr};
 use looper_heavy::{
     cli::{parse, Command}, 
     config::{read_schedule, read_state, write_state, ConfigType, State, Schedule}
