@@ -1,5 +1,5 @@
 use chrono::{DateTime, Local};
-use std::{cmp::{max, Reverse}, path::PathBuf, str::FromStr};
+use std::{cmp::{max, Ordering}, path::PathBuf, str::FromStr};
 use looper_heavy::{
     cli::{parse, Command}, 
     config::{read_schedule, read_state, write_state, ConfigType, State, Schedule}
@@ -69,7 +69,11 @@ fn show(config_folder: Option<&PathBuf>, verbose: bool) -> Result<(), String> {
         let time = get_next_date(&schedule, &state, id)?;
         schedule_table.push((id, &routine.name, time));
     }
-    schedule_table.sort_by_key(|&(_, _, time)| Reverse(time));
+
+    schedule_table.sort_by(|&(_, name1, t1), &(_, name2, t2)|
+        t2.cmp(&t1)
+            .then_with(|| name2.cmp(name1))
+    );
 
     let tasks_to_do = {
         let mut result = vec![];
